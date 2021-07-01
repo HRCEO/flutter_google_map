@@ -16,11 +16,12 @@ class RequestPermissionController{
 
   Future<void> request() async{
     final status = await _locationPermission.request();
+    print("hI $status");
     _notify(status);
   }
 
   void _notify(PermissionStatus status){
-    if(_streamController.isClosed && _streamController.hasListener){
+    if(!_streamController.isClosed && _streamController.hasListener){
       _streamController.sink.add(status);
     }
   }
@@ -28,6 +29,4 @@ class RequestPermissionController{
   void dispose(){
     _streamController.close();
   }
-
-
 }

@@ -21,7 +21,9 @@ class HomePage extends StatelessWidget {
     return ChangeNotifierProvider<HomeController>(
       create:(_)=>HomeController(),
       child: Scaffold(
-        appBar: AppBar(),
+        appBar: AppBar(
+          title: Text('GoogleMap 라온파밍'),
+        ),
           body: Consumer<HomeController>(
             builder: (_, controller, __) => GoogleMap(
               markers: controller.markers,

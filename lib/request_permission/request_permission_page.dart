@@ -23,20 +23,21 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> with Widg
     WidgetsBinding.instance!.addObserver(this);
     _subscription = _controller.onStatusChanged.listen(
       (status) {
+        print("PermissionStatus : $PermissionStatus");
         switch (status) {
           case PermissionStatus.granted:
             _goToHome();
             break;
-          case PermissionStatus.denied:
-            print("text");
+          case PermissionStatus.permanentlyDenied:
               showDialog(
                 context: context,
-                builder: (_)=>AlertDialog(
+                builder:(_)=>AlertDialog(
                   title: const Text("INFO"),
                   content: const Text("need set Location permissions"),
                   actions: [
                     TextButton(
                         onPressed: () async {
+                          Navigator.pop(context);
                           _fromSettings = await openAppSettings();
                         },
                         child: Text("Go to settings"),
