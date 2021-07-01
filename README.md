@@ -1,16 +1,10 @@
-# flutter_google_map
+플루터를 이용한 구글 지도 라이브러리 (2021.06.30)
 
-A new Flutter project.
+###적용 기능
 
-## Getting Started
+1. 구글 지도                 // google_maps_flutter
+2. 빠른 로딩                 // provider
+3. 사용자 위치 요청 권한       //permission_handler
+4. 위치 정보                 // geolocator
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+>2021년 07/01 빌드 내용 : 사용자 권한 요청 및 거부시 경고 알람 제공
