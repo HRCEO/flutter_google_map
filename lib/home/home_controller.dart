@@ -10,10 +10,12 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 class HomeController extends ChangeNotifier {
   final Map<MarkerId,Marker> _markers = {};
   final Map<PolylineId,Polyline> _polylines = {};
+  final Map<PolygonId,Polygon> _polygons = {};
 
 
   Set<Marker> get markers => _markers.values.toSet();
   Set<Polyline> get polylines => _polylines.values.toSet();
+  Set<Polygon> get polygons => _polygons.values.toSet();
 
   final _markersController = StreamController<String>.broadcast();
   Stream<String> get onMarkerTap => _markersController.stream;
@@ -30,7 +32,8 @@ class HomeController extends ChangeNotifier {
 
   StreamSubscription? _gpsSubscription, _postionSubscription;
 
-  String _polylinId = '0';
+  String _polylineId = '0';
+  String _polygonId = '0';
 
   HomeController(){
     _init();
@@ -89,7 +92,11 @@ class HomeController extends ChangeNotifier {
   Future<void> turnOnGPS() => Geolocator.openLocationSettings();
 
   void newPolyline(){
-    _polylinId = DateTime.now().millisecondsSinceEpoch.toString();
+    _polylineId = DateTime.now().millisecondsSinceEpoch.toString();
+  }
+
+  void newPolygon(){
+    _polygonId = DateTime.now().millisecondsSinceEpoch.toString();
   }
 
   void onTap(LatLng position) async{
@@ -112,29 +119,51 @@ class HomeController extends ChangeNotifier {
     // notifyListeners();
     
     /// /폴리라인
-    final PolylineId polylineId = PolylineId(_polylinId);
-    late Polyline polyline;
-    if(_polylines.containsKey(polylineId)){
-      final tmp = _polylines[polylineId]!;
-      polyline = tmp.copyWith(pointsParam: [...tmp.points, position],);
+    // final PolylineId polylineId = PolylineId(_polylineId);
+    // late Polyline polyline;
+    // if(_polylines.containsKey(polylineId)){
+    //   final tmp = _polylines[polylineId]!;
+    //   polyline = tmp.copyWith(pointsParam: [...tmp.points, position],);
+    // }
+    // else {
+    //   final color = Colors.primaries[_polylines.length];
+    //  polyline = Polyline(
+    //    polylineId: polylineId,
+    //    points: [position],
+    //    width: 3,
+    //    color: color,
+    //    startCap: Cap.roundCap,
+    //    endCap: Cap.roundCap,
+    //    // patterns: [
+    //    //   PatternItem.dot,
+    //    //   PatternItem.dash(10),
+    //    // ],
+    //  );
+    // }
+    // _polylines[polylineId] =polyline;
+    // notifyListeners();
+
+    /// / 폴리곤
+    final polygonId = PolygonId(_polygonId);
+    late Polygon polygon;
+    if(_polygons.containsKey(polygonId)){
+      final tmp = _polygons[polygonId]!;
+      polygon = tmp.copyWith(
+        pointsParam: [...tmp.points,position]
+      );
+    }else{
+      final color = Colors.primaries[polygons.length];
+      polygon = Polygon(
+        polygonId: polygonId,
+        points: [position],
+        strokeWidth: 3,
+        strokeColor: color,
+        fillColor: color.withOpacity(0.4),
+      );
     }
-    else {
-      final color = Colors.primaries[_polylines.length];
-     polyline = Polyline(
-       polylineId: polylineId,
-       points: [position],
-       width: 3,
-       color: color,
-       startCap: Cap.roundCap,
-       endCap: Cap.roundCap,
-       // patterns: [
-       //   PatternItem.dot,
-       //   PatternItem.dash(10),
-       // ],
-     );
-    }
-    _polylines[polylineId] =polyline;
+    _polygons[polygonId] = polygon;
     notifyListeners();
+
   }
 
   @override

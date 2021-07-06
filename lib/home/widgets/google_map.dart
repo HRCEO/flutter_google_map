@@ -26,6 +26,7 @@ class MapView extends StatelessWidget {
         return GoogleMap(
           markers: controller.markers,
           polylines: controller.polylines,
+          polygons: controller.polygons,
           onMapCreated: controller.onMapCreated,
           initialCameraPosition: initialCameraPosition,
           myLocationButtonEnabled: true,
