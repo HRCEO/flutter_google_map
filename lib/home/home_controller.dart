@@ -31,6 +31,7 @@ class HomeController extends ChangeNotifier {
   bool get gpsEnabled=>_gpsEnabled;
 
   StreamSubscription? _gpsSubscription, _postionSubscription;
+  GoogleMapController? _mapController;
 
   String _polylineId = '0';
   String _polygonId = '0';
@@ -57,13 +58,21 @@ class HomeController extends ChangeNotifier {
     bool initialized = false;
     await _postionSubscription?.cancel();
     _postionSubscription = Geolocator.getPositionStream().listen(
-      (position) {
+      (position) async {
         print("---------------------------------------------------------------------------------------------------------------------🎭 $position");
         if(!initialized){
           print("---------------------------------------------------------------------------------------------------------------------🎭 init $position");
           _setInitialPosition(position);
           initialized = true;
           notifyListeners();
+        }
+        if(_mapController != null){
+          final zoom = await _mapController!.getZoomLevel();
+          final cameraUpdate = CameraUpdate.newLatLngZoom(
+            LatLng(position.latitude, position.longitude),
+            zoom,
+          );
+          _mapController!.animateCamera(cameraUpdate);
         }
       },
       onError:(e){
@@ -87,6 +96,7 @@ class HomeController extends ChangeNotifier {
 
   void onMapCreated(GoogleMapController controller){
     controller.setMapStyle(mapStyle);
+    _mapController = controller;
   }
 
   Future<void> turnOnGPS() => Geolocator.openLocationSettings();
