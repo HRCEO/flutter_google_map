@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart' show ChangeNotifier;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_google_map/utils/map_style.dart';
@@ -8,19 +9,18 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class HomeController extends ChangeNotifier {
   final Map<MarkerId,Marker> _markers = {};
+  final Map<PolylineId,Polyline> _polylines = {};
+
+
   Set<Marker> get markers => _markers.values.toSet();
+  Set<Polyline> get polylines => _polylines.values.toSet();
 
   final _markersController = StreamController<String>.broadcast();
   Stream<String> get onMarkerTap => _markersController.stream;
 
   Position? _initialPosition;
-  CameraPosition get initialCameraPosition => CameraPosition(
-      target : LatLng(
-        _initialPosition!.latitude,
-        _initialPosition!.longitude,
-      ),
-    zoom: 15,
-  );
+  Position? get initialPosition => _initialPosition;
+
 
   bool _loading = true;
   bool get loading => _loading;
@@ -29,6 +29,8 @@ class HomeController extends ChangeNotifier {
   bool get gpsEnabled=>_gpsEnabled;
 
   StreamSubscription? _gpsSubscription, _postionSubscription;
+
+  String _polylinId = '0';
 
   HomeController(){
     _init();
@@ -86,22 +88,52 @@ class HomeController extends ChangeNotifier {
 
   Future<void> turnOnGPS() => Geolocator.openLocationSettings();
 
+  void newPolyline(){
+    _polylinId = DateTime.now().millisecondsSinceEpoch.toString();
+  }
+
   void onTap(LatLng position) async{
-    final id = _markers.length.toString();
-    final markerId = MarkerId(id);
-    final marker = Marker(
-      markerId: markerId,
-      position: position,
-      draggable: true,
-      icon: BitmapDescriptor.defaultMarkerWithHue(0),
-      onTap: (){
-        _markersController.sink.add(id);
-      },
-      onDragEnd: (newPosition){
-        print("---------------------------------------------------------------------------------------------------------------------🎭 new position $newPosition");
-      }
-    );
-    _markers[markerId] = marker;
+    /// /클릭시 마커 다중 생성코드
+    // final id = _markers.length.toString();
+    // final markerId = MarkerId(id);
+    // final marker = Marker(
+    //   markerId: markerId,
+    //   position: position,
+    //   draggable: true,
+    //   icon: BitmapDescriptor.defaultMarkerWithHue(0),
+    //   onTap: (){
+    //     _markersController.sink.add(id);
+    //   },
+    //   onDragEnd: (newPosition){
+    //     print("---------------------------------------------------------------------------------------------------------------------🎭 new position $newPosition");
+    //   }
+    // );
+    // _markers[markerId] = marker;
+    // notifyListeners();
+    
+    /// /폴리라인
+    final PolylineId polylineId = PolylineId(_polylinId);
+    late Polyline polyline;
+    if(_polylines.containsKey(polylineId)){
+      final tmp = _polylines[polylineId]!;
+      polyline = tmp.copyWith(pointsParam: [...tmp.points, position],);
+    }
+    else {
+      final color = Colors.primaries[_polylines.length];
+     polyline = Polyline(
+       polylineId: polylineId,
+       points: [position],
+       width: 3,
+       color: color,
+       startCap: Cap.roundCap,
+       endCap: Cap.roundCap,
+       // patterns: [
+       //   PatternItem.dot,
+       //   PatternItem.dash(10),
+       // ],
+     );
+    }
+    _polylines[polylineId] =polyline;
     notifyListeners();
   }
 

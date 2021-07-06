@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_map/home/home_controller.dart';
+import 'package:flutter_google_map/home/widgets/google_map.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -19,6 +20,17 @@ class HomePage extends StatelessWidget {
         child: Scaffold(
             appBar: AppBar(
               title: const Text('GoogleMap 라온파밍'),
+              actions: [
+                Builder(builder: (context)=>
+                  IconButton(
+                    onPressed: (){
+                      final controller = context.read<HomeController>();
+                      controller.newPolyline();
+                    },
+                    icon: const Icon(Icons.add),
+                  ),
+                )
+              ],
             ),
             body:Selector<HomeController,bool>(
               selector: (_, controller)=> controller.loading,
@@ -26,41 +38,7 @@ class HomePage extends StatelessWidget {
                 if(loading){
                   return loadingWidget!;
                 }
-                return Consumer<HomeController>(
-                  builder: (_, controller, gpsMessageWidget) {
-                    if(!controller.gpsEnabled){
-                     return gpsMessageWidget!;
-                    }
-
-                    return GoogleMap(
-                      markers: controller.markers,
-                      onMapCreated: controller.onMapCreated,
-                      initialCameraPosition: controller.initialCameraPosition,
-                      myLocationButtonEnabled: true,
-                      myLocationEnabled: true,
-                      compassEnabled: true,
-                      onTap: controller.onTap,
-                    );
-                  },
-                  child: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Text("To use our app we need the access to your location, \n so you must enable the GPS",
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 10),
-                        ElevatedButton(
-                            onPressed: (){
-                              final controller = context.read<HomeController>();
-                              controller.turnOnGPS();
-                            },
-                            child: const Text("Trun on GPS")
-                        ),
-                      ],
-                    ),
-                  ),
-                );
+                return const MapView();
               },
               child: const Center(
                 child:CircularProgressIndicator(),
