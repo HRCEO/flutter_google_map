@@ -168,12 +168,11 @@ class HomeController extends ChangeNotifier {
         points: [position],
         strokeWidth: 3,
         strokeColor: color,
-        fillColor: color.withOpacity(0.4),
+        fillColor: color.withOpacity(0.3),
       );
     }
     _polygons[polygonId] = polygon;
     notifyListeners();
-
   }
 
   @override
